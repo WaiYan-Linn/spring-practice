@@ -16,5 +16,9 @@
 	<bean id="openClassModel" class="com.jdc.assignment.model.impl.OpenClassModelImpl">
 		<constructor-arg ref="dataSource"></constructor-arg>
 	</bean>
+	
+	<bean id="registrationModel" class="com.jdc.assignment.model.impl.RegistrationModelImpl">
+		<constructor-arg ref="dataSource"></constructor-arg>
+	</bean>
 
 </beans>

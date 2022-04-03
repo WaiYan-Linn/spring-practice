@@ -22,12 +22,29 @@
 			
 			<div class="col-4">
 				
-
-			
-			</div>
+				
+				<c:url var="save" value="/classes">
+					<c:param name="courseId" value="${course.id}"></c:param>
+				</c:url>
+				
+				<form action="${save}" method="post">
+					
+					<div class="mb-3">
+						<label class="form-label">Start Date</label>
+						<input type="date" name="startDate" placeholder="Enter start date" required="required" class="form-control" />
+					</div>				
+				
+					<div class="mb-3">
+						<label class="form-label">Teacher</label>
+						<input type="text" name="teacher" placeholder="Enter teacher name" required="required" class="form-control" />
+					</div>	
+					
+					<input type="submit" value="Save Course" class="btn btn-primary" />						
+				</form>
+	
 		
 		</div>
-	
+	</div>
 	</div>
 
 </body>

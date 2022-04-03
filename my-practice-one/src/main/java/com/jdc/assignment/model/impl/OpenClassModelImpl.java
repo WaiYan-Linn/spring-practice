@@ -1,6 +1,8 @@
 package com.jdc.assignment.model.impl;
 
+import java.sql.Date;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,6 +20,12 @@ public class OpenClassModelImpl implements OpenClassModel{
 			from open_class oc join course c on oc.course_id = c.id 
 			where c.id = ? 
 			""";
+
+	private static final String INSERT = "insert into open_class (course_id,start_date,teacher) values (?,?,?)";
+
+	private static final String SELECT_ONE_COURSE =  "select * from course where id = ?";
+
+	private static final String SELECT_ONE_CLASS = "select * from open_class where id=?";
 	
 	private DataSource dataSource;
 	
@@ -63,8 +71,82 @@ public class OpenClassModelImpl implements OpenClassModel{
 
 	@Override
 	public void create(OpenClass openClass) {
-		// TODO Auto-generated method stub
+	
+		try(var conn = dataSource.getConnection();
+				var stmt = conn.prepareStatement(INSERT)) {
+			
+			stmt.setInt(1, openClass.getCourse().getId());
+			stmt.setDate(2, Date.valueOf(openClass.getStartDate()));
+			stmt.setString(3, openClass.getTeacher());
+			
+			stmt.executeUpdate();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		
+	}
+
+	@Override
+	public OpenClass findByClassId(int classId) {
+		
+		try(var conn = dataSource.getConnection();
+				var stmt = conn.prepareStatement(SELECT_ONE_CLASS)){
+			
+			stmt.setInt(1, classId);
+			
+			var result = stmt.executeQuery();
+			
+			
+			
+			while(result.next()) {
+				var openClass = new OpenClass();
+				openClass.setId(result.getInt("id"));
+				
+				//Find course
+				var course = findByCourseId(result.getInt("course_id"));
+				openClass.setCourse(course);
+				
+				
+				openClass.setStartDate(result.getDate("start_date").toLocalDate());
+				openClass.setTeacher(result.getString("teacher"));
+			
+				return openClass;
+			}
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	@Override
+	public Course findByCourseId(int courseId) {
+		try(var conn = dataSource.getConnection();
+				var stmt = conn.prepareStatement(SELECT_ONE_COURSE)) {
+			
+			stmt.setInt(1, courseId);
+			
+			var result = stmt.executeQuery();
+			
+			while(result.next()) {
+				var course = new Course();
+				
+				course.setId(result.getInt("id"));
+				course.setName(result.getString("name"));
+				course.setDuration(result.getInt("duration"));
+				course.setFees(result.getInt("fees"));
+				course.setDescription(result.getString("description"));
+				
+				return course;
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
 	}
 
 }

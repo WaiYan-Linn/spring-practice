@@ -16,8 +16,9 @@
 		
 		<h1>Using IoC Container</h1>
 		
-		<h3>Classes for ${ course.name }</h3>		
-
+		<h3>Classes for ${ course.name }</h3>	
+		
+		
 		<div>
 			<c:url var="addNew" value="/class-edit">
 				<c:param name="courseId" value="${ course.id }"></c:param>
@@ -60,8 +61,16 @@
 								<td>${ c.teacher }</td>
 								<td>${ c.startDate }</td>
 								<td>${ c.course.fees }</td>
-								<td>${ c.course.duration }</td>
+								<td>${ c.course.duration } Months</td>
 								<td>${ c.course.description }</td>
+								
+								<td>
+										<c:url var="registration" value="/registrations">
+											<c:param name="courseId" value="${course.id}"></c:param>
+											<c:param name="classId" value ="${c.id }"></c:param>
+										</c:url>
+										<a href="${registration}" >Registration</a>
+								</td>
 							</tr>
 						
 						</c:forEach>
