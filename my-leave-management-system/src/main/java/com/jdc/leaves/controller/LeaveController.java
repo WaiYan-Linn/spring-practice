@@ -5,27 +5,40 @@ import java.util.Optional;
 
 import javax.validation.Valid;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.jdc.leaves.model.dto.input.LeaveForm;
+import com.jdc.leaves.model.service.LeaveDateValidator;
+import com.jdc.leaves.model.service.LeaveService;
 
 @Controller
 @RequestMapping("leaves")
 public class LeaveController {
 
+	@Autowired
+	private LeaveService leavService;
+	
+	@Autowired
+	private LeaveDateValidator leaveValidator;
+
 	@GetMapping
 	public String index(
-			@RequestParam Optional<LocalDate> from, 
-			@RequestParam Optional<LocalDate> to,
+			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<LocalDate> from, 
+			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<LocalDate> to,
 			ModelMap model) {
-		// TODO implement here
+		var result = leavService.search(null, from, to);
+		model.put("dto", result);
 		return "leaves";
 	}
 
@@ -35,9 +48,20 @@ public class LeaveController {
 	}
 
 	@PostMapping
-	public String save(@Valid @ModelAttribute LeaveForm form, BindingResult result) {
-		// TODO implement here
-		return "";
+	public String save(@Valid @ModelAttribute(name="form") LeaveForm form, BindingResult result) {
+		
+		if(result.hasErrors()) {
+			return "leaves-edit";
+		}
+		
+		leavService.save(form);
+		
+		return "redirect:/leaves";
+	}
+	
+	@InitBinder
+	void init(WebDataBinder binder) {
+		binder.addValidators(leaveValidator);
 	}
 	
 	@ModelAttribute("form")

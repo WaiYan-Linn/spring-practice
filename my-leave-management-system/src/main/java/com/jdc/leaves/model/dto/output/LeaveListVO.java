@@ -9,7 +9,7 @@ public class LeaveListVO {
 	}
 
 	public LeaveListVO(LocalDate applyDate, int classId, int studentId, String student, String studentPhone,
-			int teacherId, String teacher, LocalDate startDate, int days, String reason) {
+			int teacherId, String teacher, LocalDate startDate, int days, String reason,String description) {
 		super();
 		this.applyDate = applyDate;
 		this.classId = classId;
@@ -21,6 +21,7 @@ public class LeaveListVO {
 		this.startDate = startDate;
 		this.days = days;
 		this.reason = reason;
+		this.description=description;
 	}
 
 	private LocalDate applyDate;
@@ -43,6 +44,8 @@ public class LeaveListVO {
 
 	private String reason;
 
+	private String description;
+	
 	public int getClassId() {
 		return classId;
 	}
@@ -121,6 +124,16 @@ public class LeaveListVO {
 
 	public void setReason(String reason) {
 		this.reason = reason;
+	}
+	
+	
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 	@Override
