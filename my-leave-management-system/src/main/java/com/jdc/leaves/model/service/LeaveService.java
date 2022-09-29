@@ -51,7 +51,7 @@ public class LeaveService {
 
 	private static final String LEAVE_COUNT_SQL = """
 			select count(leave_date) from leaves_day
-			where leave_date = :target and leaves_classes_id = :classId
+			where leaves_classes_id = :classId
 			""";
 
 	private static final String SELECT = """
@@ -136,14 +136,14 @@ public class LeaveService {
 		var result = classes.stream().map(LeaveSummaryVO::new).toList();
 
 		for (var vo : result) {
-			vo.setLeaves(findLeavesForClass(vo.getClassId(), target.orElse(LocalDate.now())));
+			vo.setLeaves(findLeavesForClass(vo.getClassId()));
 		}
 
 		return result;
 	}
 
-	private long findLeavesForClass(int classId, LocalDate date) {
-		return template.queryForObject(LEAVE_COUNT_SQL, Map.of("classId", classId, "target", Date.valueOf(date)),
+	private long findLeavesForClass(int classId) {
+		return template.queryForObject(LEAVE_COUNT_SQL, Map.of("classId", classId),
 				Long.class);
 	}
 
