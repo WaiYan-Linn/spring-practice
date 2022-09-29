@@ -50,8 +50,9 @@ public class LeaveService {
 	}
 
 	private static final String LEAVE_COUNT_SQL = """
-			select count(leave_date) from leaves_day
-			where leaves_classes_id = :classId
+			select count(leave_date) from leaves_day 
+			where leave_date = :target and leaves_classes_id = :classId
+			
 			""";
 
 	private static final String SELECT = """
@@ -136,16 +137,25 @@ public class LeaveService {
 		var result = classes.stream().map(LeaveSummaryVO::new).toList();
 
 		for (var vo : result) {
-			vo.setLeaves(findLeavesForClass(vo.getClassId()));
+			vo.setLeaves(findLeavesForClass(vo.getClassId(), target.orElse(null)));
 		}
 
 		return result;
 	}
 
-	private long findLeavesForClass(int classId) {
-		return template.queryForObject(LEAVE_COUNT_SQL, Map.of("classId", classId),
+	private long findLeavesForClass(int classId, LocalDate date) {
+		
+		if(date==null) {
+			
+			return template.queryForObject("select count(leave_date) from leaves_day where leaves_classes_id = :classId", 
+					Map.of("classId", classId),
+					Long.class);
+			}
+		return template.queryForObject(LEAVE_COUNT_SQL, Map.of("classId", classId, "target", Date.valueOf(date)),
 				Long.class);
+		
 	}
+
 
 	private Integer getStuentId() {
 		var stdId = studentService.findStudentByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
